@@ -1,0 +1,19 @@
+version: "3.2"
+services:
+    web:
+        image: microsoft/dotnet
+        ports: 
+            - "5000:5000"
+        volumes:
+            - .:/app
+        links:
+            - sqlserver:db
+        stdin_open: true
+        tty: true
+    sqlserver:
+        image: microsoft/mssql-server-linux
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=aaaAAA!!
+        ports:
+            - "1433:1433"
