@@ -1,16 +1,26 @@
 version: "3.2"
 services:
+
+    omnisharp:
+        image: omnisharp-roslyn
+        ports:
+            - "2000:2000"
+        volumes:
+            - .:${PWD}
+        command: bash -c "cd /git-repos/omnisharp-roslyn/artifacts/scripts/ && ls && ./OmniSharp -i 0.0.0.0 -s ${PWD} -v"
+
     web:
-        image: microsoft/dotnet
+        image: microsoft/dotnet:2.0-sdk
         ports: 
             - "5000:5000"
         volumes:
-            - .:/app
+            - .:${PWD}
         links:
             - sqlserver:db
         stdin_open: true
         tty: true
-        command: bash -c "cd /app && dotnet restore && dotnet build && dotnet run"
+        command: bash -c "cd ${PWD} && dotnet restore && dotnet build && dotnet run"
+
     sqlserver:
         image: microsoft/mssql-server-linux
         environment:
