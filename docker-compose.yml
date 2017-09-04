@@ -7,11 +7,14 @@ services:
             - "2000:2000"
         volumes:
             - .:${PWD}
-        command: bash -c "cd /git-repos/omnisharp-roslyn/artifacts/scripts/ && ls && ./OmniSharp -i 0.0.0.0 -s ${PWD} -v"
+        command: bash -c "cd /git-repos/omnisharp-roslyn/artifacts/scripts/ && ls && ./OmniSharp -i 0.0.0.0 -s ${PWD}"
 
     web:
-        image: microsoft/dotnet:2.0-sdk
-        ports: 
+        image: dotnet
+        depends_on:
+            - sqlserver
+            - database_init
+        ports:
             - "5000:5000"
         volumes:
             - .:${PWD}
@@ -20,6 +23,15 @@ services:
         stdin_open: true
         tty: true
         command: bash -c "cd ${PWD} && dotnet restore && dotnet build && dotnet run"
+
+    database_init:
+        image: microsoft/mssql-server-linux
+        depends_on:
+            - sqlserver
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=aaaAAA!!
+        command: bash -c 'cd /opt/mssql-tools/bin/ && ./sqlcmd -S sqlserver -U sa -P "aaaAAA!!" -Q "CREATE DATABASE TestDb;"'
 
     sqlserver:
         image: microsoft/mssql-server-linux
