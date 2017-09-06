@@ -18,11 +18,11 @@ services:
             - "5000:5000"
         volumes:
             - .:${PWD}
-        links:
-            - sqlserver:db
+        environment:
+            - SRC_DIR=${PWD}
         stdin_open: true
         tty: true
-        command: bash -c "cd ${PWD} && dotnet restore && dotnet build && dotnet run"
+        command: bash -c "cd ${PWD} && dotnet restore && dotnet build && dotnet watch run"
 
     database_init:
         image: microsoft/mssql-server-linux
